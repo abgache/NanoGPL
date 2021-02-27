@@ -61,8 +61,8 @@ class logger():
         
         if Wh and not self.discord_webhook == "":
             if mention:
-                tmp = webhook_post(f"{tlm()} - ||@everyone|| {data}", self.discord_webhook, username=self.name, image_url=self.image_url)
+                tmp = webhook_post(f"``{tlm()}`` - ||@everyone|| {data}", self.discord_webhook, username=self.name, image_url=self.image_url)
             else:
-                tmp = webhook_post(f"{tlm()} {data}", self.discord_webhook, username=self.name, image_url=self.image_url)
+                tmp = webhook_post(f"``{tlm()}`` {data}", self.discord_webhook, username=self.name, image_url=self.image_url)
 
     
