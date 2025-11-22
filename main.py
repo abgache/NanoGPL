@@ -62,6 +62,10 @@ if __name__ == "__main__":
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.log(f"Using device: {device}.", v=True, Wh=True, mention=False)
+
+    # Var reset
+    tk = None
+    embed = None
     
     if train:
         # Load data
@@ -81,6 +85,12 @@ if __name__ == "__main__":
             logger.log("Existing tokenizer found. Loading vocabulary...", v=True, Wh=True, mention=False)
             tk.load_vocab()
         del dataset # Free memory
+
+    if tokenizer_test:
+        pass
+    
+    if embedding_test:
+        pass
 
     if predict:
         pass
