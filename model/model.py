@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import json
 
 class tokenizer(): # Simply Byte-Pair Encoding tokenizer
@@ -93,9 +94,30 @@ class embedding():
 
     def create_embedding_model(self):
         # Placeholder for creating the embedding model based on dnn_config
-        self.full_model = "DNN Model based on config" # Replace with actual model creation
+        # DNN : Input : vocab_size (10,000), 2nd Layer (Linear Func) : vector_dim (128), 3rd layer (Sigmoid) : Transition layer (512), Output Layer : vocab_size (10,000) with Softmax
+        self.full_model = nn.Sequential(
+            nn.Linear(self.tokenizer.vocab_size, int(self.vector_dim)),             # Hidden Layer 1
+            nn.Linear(int(self.vector_dim), int(self.vector_dim)*4),               # Hidden Layer 2
+            nn.Sigmoid(),
+            nn.Linear(int(self.vector_dim)*4, self.tokenizer.vocab_size, dim=-1),                  # Output Layer
+            nn.Softmax()
+        )
         self.logger.log("Embedding model created based on DNN configuration.", v=True, Wh=True, mention=False)
-    
+
+    def train_embedding_model(self, dataset):
+        # Placeholder for training the embedding model
+        # format dataset into input-output pairs for training
+        pass
+
+        # Train the model
+        pass
+
+        # seperate the main model into the w2v model
+        pass
+
+        # Create embedding table
+        pass
+
 
 class model():
     def __init__(self, logger):
