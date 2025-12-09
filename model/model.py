@@ -61,7 +61,7 @@ class embedding():
         self.logger = logger
         self.full_model = None
         self.device = device
-        self.embedding_table = {}
+        self.embedding_table = []
         self.tokenizer = tokenizer
         embedding_config = json.load(embedding_config)
         self.vector_dim = embedding_config.get("vector_dim", 128)
@@ -72,7 +72,7 @@ class embedding():
             self.logger.log("Tokenizer vocabulary size is not equal to the input size of the embedding dnn. Cannot initialize embedding module.", v=False, Wh=True, mention=True)
             raise ValueError(f"{tlm()} Tokenizer vocabulary size is not equal to the input size of the embedding dnn. Cannot initialize embedding module.")
         self.logger.log("Embedding module initialized.", v=True, Wh=True, mention=False)
-        # il faut pas save le model de base, on save juste une db des vecteurs {token_id: {vector}}
+        # il faut pas save le model de base, on save juste une db des vecteurs {"token": index}
     
     def load_embedding_table(self):
         try:
@@ -173,6 +173,7 @@ class embedding():
         del one_hot
 
         # Train the model
+        self.dnn_config = json.load(self.dnn_config)
         self.num_epochs = self.dnn_config.get("num_epochs", 10)
         self.num_batches = self.dnn_config.get("batch_size", 32)
         self.learning_rate = self.dnn_config.get("learning_rate", 0.001)
@@ -216,13 +217,24 @@ class embedding():
 
         self.logger.log("Training completed successfully.", v=True, Wh=True, mention=False)
 
-        # seperate the main model into the w2v model
-        pass
-
         # Create embedding table
-        pass
+        for index in self.tokenizer.vocab_size:
+            token = int(index)
+            token_oh = []
+            one_hot = [0] * self.tokenizer.vocab_size
+            one_hot[token] = 1
+            token_oh.append(one_hot)
+            embed = self.full_model(torch.tensor(token_oh, dtype=torch.float32).to(self.device), upto_layer=1)
+            self.embedding_table += [(token, embed)]
 
 
 class model():
-    def __init__(self, logger):
+    def __init__(self, logger, embedding, context_window=64):
         self.logger = logger
+        self.embedding = embedding
+        self.tokenizer = self.embedding.tokenizer
+        self.context_window = context_window
+        self.attention_matrix = None # Single attention head
+
+
+    def create_attention_matrix(self):

@@ -26,6 +26,7 @@
     },
     "dnn":{
         "model_path": "model/model.pth",
+        "context_window": 64,
         "input_size": 196608,
         "num_epochs": 100,
         "batch_size": 32,

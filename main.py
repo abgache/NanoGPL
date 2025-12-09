@@ -84,6 +84,9 @@ if __name__ == "__main__":
         else:
             logger.log("Existing tokenizer found. Loading vocabulary...", v=True, Wh=True, mention=False)
             tk.load_vocab()
+
+        # Initialize embedding
+        
         del dataset # Free memory
 
     if tokenizer_test:
