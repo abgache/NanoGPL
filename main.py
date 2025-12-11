@@ -28,8 +28,8 @@ chat = "--chat" in argv
 tokenizer_test = "--tokenizer-test" in argv
 embedding_test = "--embedding-test" in argv
 verbose = "--verbose" in argv or "-v" in argv # detailed logs + print more model and generation infos like attention matrixs
-force_cpu = "--cpu" in sys.argv
-force_cuda = "--cuda" in sys.argv
+force_cpu = "--cpu" in argv
+force_cuda = "--cuda" in argv
 
 if __name__ == "__main__":
     print(f"{tlm()} Start of program.")
@@ -154,9 +154,9 @@ if __name__ == "__main__":
                 continue
             else:
                 if op == "+":
-                    #
+                    pass
                 else:
-                    #
+                    pass
 
 
     if predict:
@@ -164,3 +164,5 @@ if __name__ == "__main__":
     
     if chat:
         pass
+    
+    logger.log(f"End Of program.", v=True, Wh=True, mention=True)

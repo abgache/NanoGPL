@@ -244,7 +244,9 @@ class model():
         self.context_window = context_window
         self.attention_matrix = None # Single attention head
     
-    def positional_encoding(self, position, d_model=self.embedding.vector_dim): # Avoir le vecteur de position qu'on vas après additionner au vecteur du mot
+    def positional_encoding(self, position, d_model=None): # Avoir le vecteur de position qu'on vas après additionner au vecteur du mot
+        if d_model is None:
+            d_model = self.embedding.vector_dim
         pe = torch.zeros(position, d_model)
         for pos in range(position):
             for i in range(0, d_model, 2):
@@ -261,6 +263,7 @@ class model():
         return pe_vectors # vrm pas un code de tigre
 
     def create_attention_matrix(self):
+        pass
 
 
 class FNN():
