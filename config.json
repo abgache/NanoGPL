@@ -18,7 +18,7 @@
         "main_model_path": "model/embedding_model.pth",
         "json_table_path": "model/embedding_table.json",
         "dnn":{
-            "input_size": 10000,
+            "input_size": 30000,
             "num_epochs": 10,
             "batch_size": 32,
             "learning_rate": 0.001

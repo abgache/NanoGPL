@@ -112,7 +112,7 @@ class embedding():
             nn.Linear(int(self.vector_dim)*4, self.tokenizer.vocab_size),                  # Output Layer
             nn.Softmax(dim=1)
         )
-        self.logger.log(f"Embedding model created based on DNN configuration. The embedding model has {str(self.full_model.parameters())} parameters.", v=True, Wh=True, mention=False)
+        self.logger.log(f"Embedding model created based on DNN configuration. The embedding model has {str(sum(p.numel() for p in self.full_model.parameters()))} parameters.", v=True, Wh=True, mention=False)
 
     def train_embedding_model(self, dataset):
         if not self.tokenizer.vocab_status():
@@ -152,7 +152,6 @@ class embedding():
         # Create One-Hot Encoded vectors for each token
         input_oh_data = []
         for token_ids in input_data:
-            print(f"{str(self.tokenizer.vocab_size)}  vs {str(token_ids)}")
             one_hot = [0] * self.tokenizer.vocab_size
             one_hot[token_ids] = 1
             input_oh_data.append(one_hot)

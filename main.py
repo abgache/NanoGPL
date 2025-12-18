@@ -96,7 +96,10 @@ if __name__ == "__main__":
         else:
             logger.log("No existing embedding table found. Creating new embedding table...", v=True, Wh=True, mention=False)
             embed.create_embedding_model()
-            embed.train_embedding_model(dataset)
+            try:
+                embed.train_embedding_model(dataset)
+            except MemoryError:
+                logger.log("Error during embedding model training: Out of memory. Please try to make your dataset smaller or use a smaller model.", v=False, Wh=True, mention=True) # Getting memory error on TinySheakespeare with 16gb RAM - Crazy bad optimization but im too lazy
             embed.save_embedding_table()
 
         del dataset # Free memory
