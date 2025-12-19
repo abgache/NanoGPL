@@ -170,6 +170,7 @@ class embedding():
         # Create One-Hot Encoded vectors for each token
         input_oh_data = []
         for token_ids in input_data:
+            print(f"Error catcher : {self.tokenizer.vocab_size } - {token_ids}")
             one_hot = [0] * self.tokenizer.vocab_size
             one_hot[token_ids] = 1
             input_oh_data.append(one_hot)
