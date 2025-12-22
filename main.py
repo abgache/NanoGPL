@@ -98,9 +98,10 @@ if __name__ == "__main__":
             embed.create_embedding_model()
             try:
                 embed.train_embedding_model(dataset)
+                embed.save_embedding_table()
             except MemoryError:
                 logger.log("Error during embedding model training: Out of memory. Please try to make your dataset smaller or use a smaller model.", v=False, Wh=True, mention=True) # Getting memory error on TinySheakespeare with 16gb RAM - Crazy bad optimization but im too lazy
-            embed.save_embedding_table()
+                raise MemoryError(f"{tlm()} Error during embedding model training: Out of memory. Please try to make your dataset smaller or use a smaller model.")
 
         del dataset # Free memory
 

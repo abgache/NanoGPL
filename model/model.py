@@ -150,7 +150,7 @@ class embedding():
         input_data = []  # One-hot encoded vectors of target tokens
         output_data = [] # One-hot encoded vectors of context tokens
 
-        
+        self.logger.log("Preparing training data for embedding model...", v=True, Wh=True, mention=False)
         for idx, target_token_id in enumerate(tokenized_data):
             # Context tokens
             context_token_ids = [
@@ -167,24 +167,28 @@ class embedding():
             raise ValueError(f"{tlm()} Input and output data lengths do not match. Cannot train embedding model. Input size : {len(input_data)}, Output size : {len(output_data)}")
         del tokenized_data
 
+        self.logger.log("Transforming the data to one-hot vectors...", v=True, Wh=True, mention=False)
         # Create One-Hot Encoded vectors for each token
         input_oh_data = []
-        for token_ids in input_data:
-            print(f"Error catcher : {self.tokenizer.vocab_size } - {token_ids}")
+        for token_ids in input_data: # After calculation, i will need 11,2TB of RAM
             one_hot = [0] * self.tokenizer.vocab_size
-            one_hot[token_ids] = 1
+            one_hot[token_ids-1] = 1
             input_oh_data.append(one_hot)
-        
+        del input_data
+        self.logger.log(f"Input data One-hot encoding completed. Total training samples: {len(input_oh_data)}", v=True, Wh=True, mention=False)
+
         output_oh_data = []
         for token_ids in output_data:
             one_hot = [0] * self.tokenizer.vocab_size
             one_hot[token_ids] = 1
             output_oh_data.append(one_hot)
+        del output_data
+        self.logger.log(f"Output data One-hot encoding completed. Total training samples: {len(output_oh_data)}", v=True, Wh=True, mention=False)
 
         # torch.tensor
         input_tensor = torch.tensor(input_oh_data, dtype=torch.float32).to(self.device)
-        output_tensor = torch.tensor(output_oh_data, dtype=torch.float32).to(self.device)
         del input_oh_data
+        output_tensor = torch.tensor(output_oh_data, dtype=torch.float32).to(self.device)
         del output_oh_data
         del one_hot
 
