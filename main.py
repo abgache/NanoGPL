@@ -39,7 +39,7 @@ if __name__ == "__main__":
     logger = logger(discord_webhook=webhook_url) # créer le logger
 
     # Logging system info
-    logger.log(f"Micro Generative Pre-trained Transformer test arch - V{version}.", v=True, Wh=True, mention=False)
+    logger.log(f"Micro Generative Pre-trained Lam test arch - V{version}.", v=True, Wh=True, mention=False)
     logger.log(f"To change any setting, go check config.json.", v=True, Wh=True, mention=False)
     logger.log(f"PyTorch version: {torch.__version__}", v=True, Wh=True, mention=False)
     logger.log(f"CUDA status : {str(torch.cuda.is_available())}", v=True, Wh=True, mention=False)

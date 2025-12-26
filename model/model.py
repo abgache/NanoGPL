@@ -44,7 +44,7 @@ class tokenizer(): # Fully functional
         return text
     
     def create_vocab(self, dataset):
-        unique_tokens = data2tokens(dataset, vocab_size=((int(self.vocab_size))-4)) # Way less optimized than the old data.split but WAY more effective for MGPT
+        unique_tokens = data2tokens(dataset, vocab_size=((int(self.vocab_size))-4)) # Way less optimized than the old data.split but WAY more effective for MGPL
         self.tokens = {token: idx+len(self.special_tokens)+1 for idx, token in enumerate(unique_tokens)}
         for special_token, index in self.special_tokens.items():
             self.tokens[special_token] = index

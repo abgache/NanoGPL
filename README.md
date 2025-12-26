@@ -1,2 +1,2 @@
-# NanoGPT Beta 0.1
-Please open an issue for ANY small bug
+# NanoGPL Beta 0.1
+Small test generative pre-trainned LAM ()
