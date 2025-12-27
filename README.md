@@ -51,7 +51,7 @@ It's input layer is just 256 neurons (because in this case we have 256 dimension
 
 ## How to use it?
 Before testing it, you will need to have a model, either you downloaded it or trained it by ourself.
-### 1st stage : How to get MGPL files on my computer?
+### 1st stage : How to get NGPL files on my computer?
 > [!IMPORTANT]
 > To use NanoGPL, you will need: [Python 3.10](https://www.python.org/downloads/release/python-31010/) + [Git](https://git-scm.com/install/)  
 **First, clone the repo:**  
