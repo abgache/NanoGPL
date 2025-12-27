@@ -105,7 +105,7 @@ To train your own model, please run this command:
 
 ### TODO : 
 - [X] Working tokenizer
-- [ ] Working embedding
+- [X] Working embedding
 - [ ] Working SPE
 - [ ] Working single attention head
 - [ ] Working multiple attention heads

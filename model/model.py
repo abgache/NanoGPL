@@ -293,13 +293,15 @@ class embedding():
             one_hot = [0] * self.tokenizer.vocab_size
             one_hot[token-1] = 1
             token_oh.append(one_hot)
-            x = torch.tensor(token_oh, dtype=torch.float32).to(self.device)
+            x = torch.tensor(token_oh, dtype=torch.float32)
+            x = x.to(self.device)
+            self.full_model.to(self.device)
             upto_layer = 1
             for i, layer in enumerate(self.full_model):
                 x = layer(x)
                 if i == upto_layer:
                     break
-            self.embedding_table += [(token, x)]
+            self.embedding_table += [(token, x.detach().tolist())]
 
 
 class attention_head():
