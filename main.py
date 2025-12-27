@@ -5,7 +5,7 @@ import json
 from scripts.time_log import time_log_module as tlm
 from scripts.logger import logger
 from data.data import data
-from model.model import tokenizer, embedding, attention_head, FNN
+from model.model import tokenizer, embedding, SPE, attention_head, FNN # import LAM blocks
 
 # Configuration
 with open("config.json", "r") as f:
