@@ -107,7 +107,7 @@ To train your own model, please run this command:
 - [X] Working tokenizer
 - [X] Working embedding
 - [X] Working SPE
-- [ ] Working single attention head
+- [X] Working single attention head
 - [ ] Working multiple attention heads
 - [ ] Working and __trained__ final feed forward neural network
 - [ ] Special file format for GPL models (maybe something like .gpl)

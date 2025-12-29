@@ -106,11 +106,24 @@ if __name__ == "__main__":
         logger.log("Building SPE class...", v=True, Wh=True, mention=False)
         spe = SPE(device)
 
-        attention_heads = []
-        for i in range(attention_config.get("num_heads", 2)):
-            head = attention_head(logger, device, embed, attention_config)
-            attention_heads.append(head)
-        del head, embed, tk
+        #attention_heads = []
+        #for i in range(attention_config.get("num_heads", 1)):
+        #    head = attention_head(logger, device, embed, attention_config)
+        #    attention_heads.append(head)
+        #del head, embed, tk
+
+        # For the moment let's just test it with a single attention head
+        head = attention_head(logger, device, embed, attention_config)
+        if not head.check_saved_matrices():
+            logger.log("No existing attention matrices found. Trainning new matrices...", v=True, Wh=True, mention=False)
+            head.train_matrices(epochs=attention_config.get("num_epochs", 10), lr=attention_config.get("learning_rate", 1e-3))
+        else:
+            logger.log("Existing attention matrices found. Loading matrices...", v=True, Wh=True, mention=False)
+            head.get_wq()
+            head.get_wk()
+            head.get_wv()
+        head.save_matrices()
+
 
     if download:
         logger.log("Downloading pre-trained model...", v=True, Wh=True, mention=False)

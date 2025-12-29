@@ -415,10 +415,29 @@ class attention_head():
                 self.logger.log(f"Error saving Wv matrix to {self.wv_path}: {e}", v=False, Wh=True, mention=True)
                 raise ValueError(f"{tlm()} Error saving Wv matrix to {self.wv_path}: {e}")
     
+    def save_matrices(self):
+        try:
+            with open(self.wq_path, "w", encoding="utf-8") as f:
+                json.dump(self.wq.tolist(), f, ensure_ascii=False, indent=4)
+            with open(self.wk_path, "w", encoding="utf-8") as f:
+                json.dump(self.wk.tolist(), f, ensure_ascii=False, indent=4)
+            with open(self.wv_path, "w", encoding="utf-8") as f:
+                json.dump(self.wv.tolist(), f, ensure_ascii=False, indent=4)
+            self.logger.log(f"Wq, Wk, Wv matrices saved to {self.wq_path}, {self.wk_path}, {self.wv_path}.", v=True, Wh=True, mention=False)
+        except Exception as e:
+            self.logger.log(f"Error saving Wq/Wk/Wv matrices: {e}", v=False, Wh=True, mention=True)
+            raise ValueError(f"{tlm()} Error saving Wq/Wk/Wv matrices: {e}")
+    
+    def check_matrices(self):
+        return (os.path.exists(self.wq_path) and os.path.getsize(self.wq_path) > 0) and (os.path.exists(self.wk_path) and os.path.getsize(self.wk_path) > 0) and (os.path.exists(self.wv_path) and os.path.getsize(self.wv_path) > 0)
+
     def train_matrices(self, epochs=10, lr=1e-3):
-        if self.wq is None or self.wk is None or self.wv is None:
-            self.logger.log(f"Wq/Wk/Wv matrices not initialized. Call get_wq/get_wk/get_wv first.", v=True, Wh=True, mention=False)
-            raise ValueError(f"{tlm()} Wq/Wk/Wv matrices not initialized. Call get_wq/get_wk/get_wv first.")
+        if self.wq is None:
+            self.get_wq()
+        if self.wk is None:
+            self.get_wk()
+        if self.wv is None:
+            self.get_wv()
 
         if not self.embedding.embedding_table:
             self.logger.log(f"Embedding table is empty. Load or create it first.", v=True, Wh=True, mention=False)

@@ -28,6 +28,8 @@
     "attention":{
         "context_window": 64,
         "num_heads": 2,
+        "num_epochs": 10,
+        "learning_rate": 0.001,
         "head_dim": {
             "query": 128,
             "key": 128,
