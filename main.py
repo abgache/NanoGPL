@@ -106,6 +106,12 @@ if __name__ == "__main__":
         logger.log("Building SPE class...", v=True, Wh=True, mention=False)
         spe = SPE(device)
 
+        attention_heads = []
+        for i in range(attention_config.get("num_heads", 2)):
+            head = attention_head(logger, device, embed, attention_config)
+            attention_heads.append(head)
+        del head, embed, tk
+
     if download:
         logger.log("Downloading pre-trained model...", v=True, Wh=True, mention=False)
         auto_choose = input("Do you want to choose the model size or let the program choose the best one for your hardware? (y = choose by yourself / n = let the program choose): ") == "n"

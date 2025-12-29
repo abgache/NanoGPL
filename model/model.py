@@ -8,7 +8,7 @@ from scripts.time_log import time_log_module as tlm
 from scripts.byte_pair_encoder import data2tokens
 from scripts.graph import plot_attention_matrix
 
-class tokenizer(): # Fully functional
+class tokenizer():
     def __init__(self, logger, tokenizer_config):
         self.logger = logger
         tokenizer_config = tokenizer_config
@@ -362,7 +362,7 @@ class attention_head():
                 raise ValueError(f"{tlm()} Error loading Wq matrix from {self.wq_path}: {e}")
         else:
             self.logger.log(f"Wq matrix file {self.wq_path} not found. Trainning new Wq matrix...", v=False, Wh=True, mention=True)
-            self.wq = torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device)
+            self.wq = torch.nn.Parameter(torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device))
             # save it
             try:
                 with open(self.wq_path, "w", encoding="utf-8") as f:
@@ -383,7 +383,7 @@ class attention_head():
                 raise ValueError(f"{tlm()} Error loading Wk matrix from {self.wk_path}: {e}")
         else:
             self.logger.log(f"Wk matrix file {self.wk_path} not found. Trainning new Wk matrix...", v=False, Wh=True, mention=True)
-            self.wk = torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device)
+            self.wk = torch.nn.Parameter(torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device))
             # save it
             try:
                 with open(self.wk_path, "w", encoding="utf-8") as f:
@@ -404,7 +404,7 @@ class attention_head():
                 raise ValueError(f"{tlm()} Error loading Wv matrix from {self.wv_path}: {e}")
         else:
             self.logger.log(f"Wv matrix file {self.wv_path} not found. Trainning new Wv matrix...", v=False, Wh=True, mention=True)
-            self.wv = torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device)
+            self.wv = torch.nn.Parameter(torch.randn((self.embedding.vector_dim, self.embedding.vector_dim), dtype=torch.float32).to(self.device))
 
             # save it
             try:
@@ -414,6 +414,52 @@ class attention_head():
             except Exception as e:
                 self.logger.log(f"Error saving Wv matrix to {self.wv_path}: {e}", v=False, Wh=True, mention=True)
                 raise ValueError(f"{tlm()} Error saving Wv matrix to {self.wv_path}: {e}")
+    
+    def train_matrices(self, epochs=10, lr=1e-3):
+        if self.wq is None or self.wk is None or self.wv is None:
+            self.logger.log(f"Wq/Wk/Wv matrices not initialized. Call get_wq/get_wk/get_wv first.", v=True, Wh=True, mention=False)
+            raise ValueError(f"{tlm()} Wq/Wk/Wv matrices not initialized. Call get_wq/get_wk/get_wv first.")
+
+        if not self.embedding.embedding_table:
+            self.logger.log(f"Embedding table is empty. Load or create it first.", v=True, Wh=True, mention=False)
+            raise ValueError(f"{tlm()} Embedding table is empty. Load or create it first.")
+
+        # Prépare les embeddings comme tensor
+        vectors_only = [vec for token, vec in self.embedding.embedding_table]
+        vectors_tensor = torch.tensor(vectors_only, dtype=torch.float32).to(self.device)
+
+        # Convertir Wq/Wk/Wv en paramètres si ce n'est pas déjà fait
+        self.wq = torch.nn.Parameter(self.wq)
+        self.wk = torch.nn.Parameter(self.wk)
+        self.wv = torch.nn.Parameter(self.wv)
+
+        optimizer = optim.Adam([self.wq, self.wk, self.wv], lr=lr)
+        loss_fn = nn.MSELoss()
+
+        for epoch in range(epochs):
+            total_loss = 0.0
+
+            for i, input_vec in enumerate(vectors_tensor):
+                optimizer.zero_grad()
+
+                query = self.embed2query(input_vec)
+                key = self.embed2key(input_vec)
+                value = self.embed2value(input_vec)
+
+                # Self-supervised target : reproduire le vecteur lui-même
+                target = input_vec
+
+                # Loss sur query + key + value pour simplifier
+                loss = loss_fn(query, target) + loss_fn(key, target) + loss_fn(value, target)
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_loss = total_loss / len(vectors_tensor)
+            self.logger.log(f"[train_matrices] Epoch {epoch+1}/{epochs} - Loss: {avg_loss:.6f}", v=True, Wh=True, mention=False)
+
+        self.logger.log("[train_matrices] Training completed.", v=True, Wh=True, mention=False)
 
     def embed2query(self, input_embedding):
         if isinstance(input_embedding, list):
@@ -474,7 +520,7 @@ class FNN():
             nn.Linear(4096, self.embedding.tokenizer.vocab_size),
             nn.Softmax(dim=1)
         )
-        self.logger.log("Feedforward Neural Network initialized.", v=True, Wh=True, mention=False)
+        self.logger.log("Feed forward neural network initialized.", v=True, Wh=True, mention=False)
     
     def train_ffn(self, x, y):
         pass
