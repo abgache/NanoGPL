@@ -24,7 +24,7 @@ jobs:
           
           # Selon l'événement
           if [ "$EVENT" = "push" ]; then
-            DESCRIPTION="Repo: **${GITHUB_REPOSITORY}**\nAuteur: **${GITHUB_ACTOR}**\nCommit: \`${GITHUB_SHA}\`"
+            DESCRIPTION="Repo: **${GITHUB_REPOSITORY}**\\nAuteur: **${GITHUB_ACTOR}**\\nCommit: \`${GITHUB_SHA}\`"
             TITLE="📦 Nouveau push"
           elif [ "$EVENT" = "release" ]; then
             DESCRIPTION="Repo: **${GITHUB_REPOSITORY}**\nAuteur: **${GITHUB_ACTOR}**\nRelease: **${GITHUB_REF##*/}**"
