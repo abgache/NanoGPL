@@ -15,7 +15,7 @@
         }
     },
     "embedding":{
-        "vector_dim": 256,
+        "vector_dim": 1024,
         "main_model_path": "model/embedding_model.pth",
         "json_table_path": "model/embedding_table.json",
         "dnn":{
@@ -31,9 +31,9 @@
         "num_epochs": 10,
         "learning_rate": 0.001,
         "head_dim": {
-            "query": 128,
-            "key": 128,
-            "value": 128
+            "query": 256,
+            "key": 256,
+            "value": 256
         },
         "matrix_path":{
             "W_Q": "model/W_Q.json",

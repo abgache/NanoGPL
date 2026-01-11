@@ -113,8 +113,8 @@ if __name__ == "__main__":
         #del head, embed, tk
 
         # For the moment let's just test it with a single attention head
-        head = attention_head(logger, device, embed, attention_config)
-        if not head.check_saved_matrices():
+        head = attention_head(logger, embed, SPE, attention_config)
+        if not head.check_matrices():
             logger.log("No existing attention matrices found. Trainning new matrices...", v=True, Wh=True, mention=False)
             head.train_matrices(epochs=attention_config.get("num_epochs", 10), lr=attention_config.get("learning_rate", 1e-3))
         else:

@@ -111,7 +111,7 @@ To train your own model, please run this command:
 - [ ] Working multiple attention heads
 - [ ] Working and __trained__ final feed forward neural network
 - [ ] Special file format for GPL models (maybe something like .gpl)
-- [ ] Local API
-- [ ] WebUI for ngpl
-- [ ] Mobile version
 - [ ] Comptable with AMD GPUs
+- [ ] Local API
+- [ ] WebUI for ngpls
+- [ ] Mobile version

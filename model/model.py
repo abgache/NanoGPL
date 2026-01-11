@@ -130,7 +130,7 @@ class embedding():
             nn.Linear(self.tokenizer.vocab_size, int(self.vector_dim)),             # Hidden Layer 1
             nn.Linear(int(self.vector_dim), int(self.vector_dim)*4),               # Hidden Layer 2
             nn.Sigmoid(),
-            nn.Linear(int(self.vector_dim)*4, self.tokenizer.vocab_size),                  # Output Layer
+            nn.Linear(int(self.vector_dim), self.tokenizer.vocab_size),                  # Output Layer
             nn.Softmax(dim=1)
         )
         self.logger.log(f"Embedding model created based on DNN configuration. The embedding model has {str(sum(p.numel() for p in self.full_model.parameters()))} parameters.", v=True, Wh=True, mention=False)
@@ -452,7 +452,7 @@ class attention_head():
         self.wk = torch.nn.Parameter(self.wk)
         self.wv = torch.nn.Parameter(self.wv)
 
-        optimizer = optim.Adam([self.wq, self.wk, self.wv], lr=lr)
+        optimizer = torch.optim.Adam([self.wq, self.wk, self.wv], lr=lr)
         loss_fn = nn.MSELoss()
 
         for epoch in range(epochs):
@@ -541,5 +541,8 @@ class FNN():
         )
         self.logger.log("Feed forward neural network initialized.", v=True, Wh=True, mention=False)
     
+    def predict(self, input_vector):
+        pass
+
     def train_ffn(self, x, y):
         pass
