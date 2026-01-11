@@ -539,10 +539,56 @@ class FNN():
             nn.Linear(4096, self.embedding.tokenizer.vocab_size),
             nn.Softmax(dim=1)
         )
+        self.model.to(self.embedding.device)
         self.logger.log("Feed forward neural network initialized.", v=True, Wh=True, mention=False)
     
-    def predict(self, input_vector):
-        pass
+    def predict(self, input_vector): # Returns the token ID with the highest probability
+        if isinstance(input_vector, list):
+            input_vector = torch.tensor(input_vector, dtype=torch.float32).to(self.embedding.device)
+        self.model.to(self.embedding.device)
+        self.model.eval()
+        with torch.no_grad():
+            output = self.model(input_vector.unsqueeze(0))
+        predicted_token_id = torch.argmax(output, dim=1).item()
+        return int(predicted_token_id)
 
-    def train_ffn(self, x, y):
+    def train_ffn(self, x, y): # x : python list of input pytorch vectors, y : list of target token IDs NOT one-hot encoded
+        if not len(x) == len(y):
+            self.logger.log("Input and output data lengths do not match. Cannot train FNN.", v=False, Wh=True, mention=True)
+            raise ValueError(f"{tlm()} Input and output data lengths do not match. Cannot train FNN.")
+        
+        for vector in x:
+            if isinstance(vector, list):
+                vector = torch.tensor(vector, dtype=torch.float32).to(self.embedding.device)
+        
+        # No one-hot encoding for y, crossentropy loss instead
+        criterion = nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        self.model.to(self.embedding.device)
+        for epoch in range(self.num_epochs):
+            total_loss = 0.0
+            for i in range(0, len(x), self.batch_size):
+                batch_x = torch.stack([torch.tensor(vec, dtype=torch.float32).to(self.embedding.device) for vec in x[i:i+self.batch_size]])
+                batch_y = torch.tensor(y[i:i+self.batch_size], dtype=torch.long).to(self.embedding.device)
+
+                optimizer.zero_grad()
+                outputs = self.model(batch_x)
+                loss = criterion(outputs, batch_y)
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+            avg_loss = total_loss / (len(x) / self.batch_size)
+            self.logger.log(f"[train_ffn] Epoch {epoch+1}/{self.num_epochs} - Loss: {avg_loss:.6f}", v=True, Wh=True, mention=False)
+        par = str(sum(p.numel() for p in self.model.parameters()))
+        self.logger.log("[train_ffn] Training completed. The model has {par} parameters.", v=True, Wh=True, mention=False)
+        del par, x, y
+
+    def save_model(self):
+        pass
+    
+    def load_model(self):
+        pass
+    
+    def model_status(self):
         pass
