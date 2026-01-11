@@ -304,6 +304,13 @@ class embedding():
                 if i == upto_layer:
                     break
             self.embedding_table += [(token, x.detach().tolist())]
+    
+    def token_to_vector(self, token_id):
+        for token, vector in self.embedding_table:
+            if token == token_id:
+                return torch.tensor(vector, dtype=torch.float32).to(self.device)
+        self.logger.log(f"Token ID {token_id} not found in embedding table. Returning zero vector.", v=False, Wh=True, mention=True)
+        return torch.zeros((self.vector_dim,), dtype=torch.float32).to(self.device)
 
 class SPE():
     def __init__(self, device):
@@ -521,7 +528,7 @@ class attention_head():
         return new_vector
 
         
-class FNN():
+class FFN():
     def __init__(self, logger, embedding, ffn_config):
         self.logger = logger
         self.embedding = embedding
@@ -585,10 +592,20 @@ class FNN():
         del par, x, y
 
     def save_model(self):
-        pass
+        try:
+            torch.save(self.model.state_dict(), self.model_path)
+            self.logger.log(f"FNN model saved to {self.model_path}.", v=True, Wh=True, mention=False)
+        except Exception as e:
+            self.logger.log(f"Error saving FNN model to {self.model_path}: {e}", v=False, Wh=True, mention=True)
+            raise ValueError(f"{tlm()} Error saving FNN model to {self.model_path}: {e}")
     
     def load_model(self):
-        pass
+        try:
+            self.model.load_state_dict(torch.load(self.model_path, map_location=self.embedding.device))
+            self.logger.log(f"FNN model loaded from {self.model_path}.", v=True, Wh=True, mention=False)
+        except Exception as e:
+            self.logger.log(f"Error loading FNN model from {self.model_path}: {e}", v=False, Wh=True, mention=True)
+            raise ValueError(f"{tlm()} Error loading FNN model from {self.model_path}: {e}")
     
     def model_status(self):
-        pass
+        return os.path.exists(self.model_path) and os.path.getsize(self.model_path) > 0

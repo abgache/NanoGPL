@@ -18,7 +18,18 @@ class data():
         
         return self.data
     
-    def ffn_data(self, tokenizer, num_examples=100000):
-        x = [1, 3] # Test data
-        y = [2, 4] # Token ids
+    def ffn_data(self, tokenizer, embed):
+        x = [] # List of pytorch tensors
+        y = [] # List of token ids
+
+        if self.data == "":
+            self.load_data()
+
+        tokenized_data = tokenizer.encode(self.data)
+        for token in tokenized_data:
+            x.append(embed.token_to_vector(token))
+        
+        for token in tokenized_data[1:]:
+            y.append(tokenizer.tokenize(token))
+
         return (x, y)
