@@ -7,6 +7,7 @@ from scripts.time_log import time_log_module as tlm
 from scripts.logger import logger
 from data.data import data
 from model.model import tokenizer, embedding, SPE, attention_head, FFN # import LAM blocks
+#import winsound
 
 # Configuration
 with open("config.json", "r") as f:
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     logger.log(f"To change any setting, go check config.json.", v=True, Wh=True, mention=False)
     logger.log(f"PyTorch version: {torch.__version__}", v=True, Wh=True, mention=False)
     logger.log(f"CUDA status : {str(torch.cuda.is_available())}", v=True, Wh=True, mention=False)
+    logger.log(f"Script args : {argv}", v=False, Wh=True, mention=False)
     if torch.cuda.is_available():
         count = torch.cuda.device_count()
         msg = f"{count} GPU{'s' if count > 1 else ''} detected."
@@ -132,6 +134,7 @@ if __name__ == "__main__":
             ffn = FFN(logger, embed, ffn_config)
             if not ffn.model_status():
                 logger.log("No existing FFN model found. Training new model...", v=True, Wh=True, mention=False)
+                data = data(logger, data_path, dataset_loading_size)
                 x,y = data.ffn_data(tk, embed)
                 # Prepare training data
                 ffn.train_ffn(x, y)
@@ -241,4 +244,5 @@ if __name__ == "__main__":
         logger.log(f"Unknown error occurred : {Exception}. Please check the logs for more details.", v=True, Wh=True, mention=True)
         tb = traceback.format_exc()
         logger.log(tb, v=True, Wh=True, mention=True)
+        #winsound.MessageBeep(winsound.MB_ICONASTERISK)
     logger.log(f"End Of program.", v=True, Wh=True, mention=True)

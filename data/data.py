@@ -1,4 +1,5 @@
 from scripts.time_log import time_log_module as tlm
+import json
 
 class data():
     def __init__(self, logger, data_path, dataset_loading_size):
@@ -25,11 +26,23 @@ class data():
         if self.data == "":
             self.load_data()
 
-        tokenized_data = tokenizer.encode(self.data)
+        with open(embed.json_table_path, "r", encoding="utf-8") as f:
+            tmp = json.load(f)
+
+        input_data = tmp[0].get("input_data", {})
+
+        # On récupère les valeurs en retirant juste les doublons consécutifs
+        tokenized_data = []
+        prev = None
+        for v in input_data.values():
+            if v != prev:
+                tokenized_data.append(v)
+                prev = v
+
         for token in tokenized_data:
             x.append(embed.token_to_vector(token))
         
         for token in tokenized_data[1:]:
-            y.append(tokenizer.tokenize(token))
+            y.append(tokenizer.detokenize(token))
 
         return (x, y)
