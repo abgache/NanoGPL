@@ -1,5 +1,5 @@
 ![ngpl_ico](ngpl.png)
-# NanoGPL Beta 0.1
+# NanoGPL Beta 0.2
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)  [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-red)](https://pytorch.org/)  
 Small test generative pre-trained LAM (Linear Attention Mechanism).  
 To change any setting, please go check ``config.json``.  
