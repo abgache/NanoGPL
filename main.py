@@ -123,12 +123,13 @@ if __name__ == "__main__":
             if not head.check_matrices():
                 logger.log("No existing attention matrices found. Trainning new matrices...", v=True, Wh=True, mention=False)
                 head.train_matrices(epochs=attention_config.get("num_epochs", 10), lr=attention_config.get("learning_rate", 1e-3))
+                head.save_matrices()
             else:
                 logger.log("Existing attention matrices found. Loading matrices...", v=True, Wh=True, mention=False)
                 head.get_wq()
                 head.get_wk()
                 head.get_wv()
-            head.save_matrices()
+            
 
             # ffn
             ffn = FFN(logger, embed, ffn_config)

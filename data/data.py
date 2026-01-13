@@ -29,6 +29,7 @@ class data():
         with open(embed.json_table_path, "r", encoding="utf-8") as f:
             tmp = json.load(f)
 
+        print(tmp)
         input_data = tmp[0].get("input_data", {})
 
         # On récupère les valeurs en retirant juste les doublons consécutifs

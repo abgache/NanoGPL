@@ -526,7 +526,6 @@ class attention_head():
         value_vectors = torch.tensor([self.embed2value(emb) for emb in self.embedding.embedding_table], dtype=torch.float32).to(self.device)
         new_vector = attention_weights @ value_vectors
         return new_vector
-
         
 class FFN():
     def __init__(self, logger, embedding, ffn_config):
