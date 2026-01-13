@@ -34,7 +34,7 @@ class data():
         # On récupère les valeurs en retirant juste les doublons consécutifs
         tokenized_data = []
         prev = None
-        for v in input_data.values():
+        for v in input_data:
             if v != prev:
                 tokenized_data.append(v)
                 prev = v
