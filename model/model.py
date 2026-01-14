@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import json
 import os
+import traceback
 from math import ceil, sin, cos, sqrt
 from collections import Counter
 from scripts.time_log import time_log_module as tlm
@@ -560,8 +561,8 @@ class FFN():
 
     def train_ffn(self, x, y): # x : python list of input pytorch vectors, y : list of target token IDs NOT one-hot encoded
         if not len(x) == len(y):
-            self.logger.log("Input and output data lengths do not match. Cannot train FNN.", v=False, Wh=True, mention=True)
-            raise ValueError(f"{tlm()} Input and output data lengths do not match. Cannot train FNN.")
+            self.logger.log(f"Input and output data lengths do not match. Cannot train FNN. Input size : {len(x)} | Output size : {len(y)}", v=False, Wh=True, mention=True)
+            raise ValueError(f"{tlm()} Input and output data lengths do not match. Cannot train FNN. Input size : {len(x)} | Output size : {len(y)}")
         
         for vector in x:
             if isinstance(vector, list):
@@ -579,7 +580,15 @@ class FFN():
 
                 optimizer.zero_grad()
                 outputs = self.model(batch_x)
-                loss = criterion(outputs, batch_y)
+                try:
+                    loss = criterion(outputs, batch_y)
+                except RuntimeError:
+                    tb = traceback.format_exc()
+                    if "Expected target size" in tb: # Def not ment to be usefull, jst for debugging
+                        self.logger.log(f"[!] Error : {tb}\nBatch_x = {batch_x}\nBatch_y = {batch_y}\nOutputs = {outputs}", v=True, Wh=True, mention=True)
+                    else:
+                        self.logger.log(f"[!] Error : {tb}", v=True, Wh=True, mention=True)
+                    exit(1)
                 loss.backward()
                 optimizer.step()
 

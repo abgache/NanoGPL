@@ -43,6 +43,9 @@ class data():
             x.append(token[1]) # Token[0] = Token ID Token[1] = Token vector 
         
         for token in tokenized_data[1:]:
-            y.append(tokenizer.detokenize(token))
+            y.append(token[0])
+        
+        # Last token need to be <eos>
+        y.append(4)
 
         return (x, y)
