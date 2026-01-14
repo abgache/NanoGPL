@@ -1,4 +1,4 @@
-# logger module v1.1
+# logger module v1.2
 from scripts.time_log import time_log_module as tlm, time_log_module_files as tlmf
 import time, os
 import requests as r
@@ -28,7 +28,8 @@ class logger():
             raise Warning(f"{tlm()} The input data for the log function is not a string. The data will NOT be logged.")
         with open(f"logs\{self.actual_log}", "a") as file:
             file.write(f"{tlm()} {data}\n")
-        print(f"{tlm()} {data}")
+        if v:
+            print(f"{tlm()} {data}")
         if Wh and not self.discord_webhook == "":
             if mention:
                 tmp = webhook_post(f"{tlm()} - ||@everyone|| {data}", self.discord_webhook)

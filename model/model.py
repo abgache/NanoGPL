@@ -572,7 +572,7 @@ class FFN():
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.model.to(self.embedding.device)
         for epoch in range(self.num_epochs):
-            total_loss = 0.0
+            total_loss = 0.00001 # Test 2 get rid of DivisionByZeroError
             for i in range(0, len(x), self.batch_size):
                 batch_x = torch.stack([torch.tensor(vec, dtype=torch.float32).to(self.embedding.device) for vec in x[i:i+self.batch_size]])
                 batch_y = torch.tensor(y[i:i+self.batch_size], dtype=torch.long).to(self.embedding.device)
