@@ -513,7 +513,7 @@ class attention_head():
 
         scores = (queries @ keys.T) / math.sqrt(queries.size(-1))
         scores = scores.masked_fill(torch.triu(torch.ones_like(scores), 1).bool(), self.masking_value)
-        self.attention_matrix = torch.softmax(scores, dim=-1)
+        self.attention_matrix = scores#torch.softmax(scores, dim=-1)
         plot_attention_matrix(self.attention_matrix, "data/attention.png")
 
         # Apply softmax to get attention weights
@@ -572,6 +572,7 @@ class FFN():
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.model.to(self.embedding.device)
+
         for epoch in range(self.num_epochs):
             total_loss = 0.00001 # Test 2 get rid of DivisionByZeroError
             for i in range(0, len(x), self.batch_size):
@@ -580,6 +581,7 @@ class FFN():
 
                 optimizer.zero_grad()
                 outputs = self.model(batch_x)
+                outputs = outputs.squeeze(1)
                 try:
                     loss = criterion(outputs, batch_y)
                 except RuntimeError:
@@ -591,6 +593,11 @@ class FFN():
                     exit(1)
                 loss.backward()
                 optimizer.step()
+
+                # Show training data info
+                # self.logger.log(f"min y: {batch_y.min().item()}", v=True, Wh=True, mention=False)
+                # self.logger.log(f"max y: {batch_y.max().item()}", v=True, Wh=True, mention=False)
+                # self.logger.log(f"vocab_size: {self.embedding.tokenizer.vocab_size}", v=True, Wh=True, mention=False)
 
                 total_loss += loss.item()
             avg_loss = total_loss / (len(x) / self.batch_size)
