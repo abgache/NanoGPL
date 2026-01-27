@@ -232,12 +232,14 @@ if __name__ == "__main__":
                 else:
                     # Get each word embedding
                     a = embed.token_to_vector(tk.tokenize(w1))
+                    print(type(a), a.shape)
                     b = embed.token_to_vector(tk.tokenize(w2))
                     if op == "+":
-                        result_vector = [x + y for x, y in zip(a[0], b[0])]
-                        print(f"Resulting vector (first 10 dimensions): {result_vector[:10]} | Length: {len(result_vector)} | New word approximation: {tk.detokenize(embed.vector_to_token([result_vector])[0])}")
+                        result_vector = a + b
+                        print(f"Resulting vector (first 10 dimensions): {result_vector[:10]} | Length: {len(result_vector)} | New word approximation: {tk.detokenize(embed.vector_to_token(result_vector))}")
                     else:
-                        pass
+                        result_vector = a - b
+                        print(f"Resulting vector (first 10 dimensions): {result_vector[:10]} | Length: {len(result_vector)} | New word approximation: {tk.detokenize(embed.vector_to_token(result_vector))}")
 
 
         if predict:

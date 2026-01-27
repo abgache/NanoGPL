@@ -41,11 +41,18 @@ class tokenizer():
         return tokens
     
     def detokenize(self, token_ids):
-        id_to_token = {index: token for token, index in self.tokens.items()}
-        tokens = [id_to_token.get(token_id, "<unk>") for token_id in token_ids]
-        text = " ".join(tokens)
+        try:
+            id_to_token = {index: token for token, index in self.tokens.items()}
+            tokens = [id_to_token.get(token_id, "<unk>") for token_id in token_ids]
+            text = " ".join(tokens)
+        except TypeError:
+            token_ids = [token_ids]
+            id_to_token = {index: token for token, index in self.tokens.items()}
+            tokens = [id_to_token.get(token_id, "<unk>") for token_id in token_ids]
+            text = " ".join(tokens)
         return text
-    
+
+
     def create_vocab(self, dataset):
         unique_tokens = data2tokens(dataset, vocab_size=((int(self.vocab_size))-4)) # Way less optimized than the old data.split but WAY more effective for MGPL
         self.tokens = {token: idx+len(self.special_tokens)+1 for idx, token in enumerate(unique_tokens)}
@@ -312,6 +319,22 @@ class embedding():
                 return torch.tensor(vector, dtype=torch.float32).to(self.device)
         self.logger.log(f"Token ID {token_id} not found in embedding table. Returning zero vector.", v=False, Wh=True, mention=True)
         return torch.zeros((self.vector_dim,), dtype=torch.float32).to(self.device)
+    
+    # <!> This is NOT a real function, just added it for --embedding-test, it will NOT be used in real generation. <!>
+    def vector_to_token(self, input_vector): # Returns the closest token based on vector distance (Euclidean)
+        input_tensor = torch.tensor(input_vector) if not torch.is_tensor(input_vector) else input_vector
+        min_distance = float('inf')
+        closest_token = None
+        input_tensor = input_tensor.to(self.device)
+        for token, vector in self.embedding_table:
+            vec_tensor = vector if torch.is_tensor(vector) else torch.tensor(vector)
+            vec_tensor = vec_tensor.to(self.device)  
+            distance = torch.norm(input_tensor - vec_tensor).item()
+            if distance < min_distance:
+                min_distance = distance
+                closest_token = token
+
+        return closest_token
 
 class SPE():
     def __init__(self, device):
