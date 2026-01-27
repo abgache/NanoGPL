@@ -599,7 +599,7 @@ class FFN():
                 # self.logger.log(f"max y: {batch_y.max().item()}", v=True, Wh=True, mention=False)
                 # self.logger.log(f"vocab_size: {self.embedding.tokenizer.vocab_size}", v=True, Wh=True, mention=False)
 
-                total_loss += loss.item()
+                total_loss += int(loss.item())
             avg_loss = total_loss / (len(x) / self.batch_size)
             self.logger.log(f"[train_ffn] Epoch {epoch+1}/{self.num_epochs} - Loss: {avg_loss:.6f}", v=True, Wh=True, mention=False)
         par = str(sum(p.numel() for p in self.model.parameters()))

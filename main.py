@@ -192,9 +192,9 @@ if __name__ == "__main__":
                 sentence = input("Enter a sentence to tokenize (type 'exit' to quit): ")
                 if sentence == "exit":
                     break
-                token_ids = tk.encode(sentence)
+                token_ids = tk.tokenize(sentence)
                 print(f"Token IDs: {token_ids}")
-                decoded_sentence = tk.decode(token_ids)
+                decoded_sentence = tk.detokenize(token_ids)
                 print(f"Decoded Sentence: {decoded_sentence}")
 
         if embedding_test:
@@ -230,8 +230,12 @@ if __name__ == "__main__":
                     print("Invalid operation. Please enter + or -.")
                     continue
                 else:
+                    # Get each word embedding
+                    a = embed.token_to_vector(tk.tokenize(w1))
+                    b = embed.token_to_vector(tk.tokenize(w2))
                     if op == "+":
-                        pass
+                        result_vector = [x + y for x, y in zip(a[0], b[0])]
+                        print(f"Resulting vector (first 10 dimensions): {result_vector[:10]} | Length: {len(result_vector)} | New word approximation: {tk.detokenize(embed.vector_to_token([result_vector])[0])}")
                     else:
                         pass
 
