@@ -84,7 +84,7 @@ To train your own model, please run this command:
 > The default dataset is Tiny Sheakspeare, it is not recommended for a real language model, it is only used for tests. I recommend downloading one from the internet, make sure it's in UTF-8 and change the path in ``config.json``. You can aswell run ``reset.bat`` to delete the saved tokenizer data, embedding tables, ...
 
 **Option 3: get a model from the internet**
-If you have ``.gpl`` model, please run this command:
+If you have ``.gpl`` model, please run this command:  
 ```batch
    python main.py -p "path/to/the/model.gpl"
 ```
