@@ -100,6 +100,7 @@ If you have ``.gpl`` model, please run this command:
 - **--embedding-test :** Used to test the embedding model
 - **--cpu :** Used to force the usage of the CPU
 - **--cuda :** Used to force the usage of CUDA (NVIDIA Graphic cards)
+- **--path :** Used to give the path to load a .gpl model
 
 ---
 
