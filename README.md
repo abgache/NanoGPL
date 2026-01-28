@@ -63,6 +63,12 @@ Before testing it, you will need to have a model, either you downloaded it or tr
 ```batch
    pip install -r requirements.txt
 ```
+### 2nd stage : train a new model or load one
+> To get an existing model, you can either use the ``-p`` arg with the model path or add every file in its place.
+**To train a new model :**
+Use the ``--train`` arg and add the dataset in the data/ path, and add its path in the ``config.json``.
+**To download a model :**
+You can either download one from the internet (``.gpl``) or use the ``-d``.
 
 ### 2nd stage : How to get a working model?
 > [!NOTE]

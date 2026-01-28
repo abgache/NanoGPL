@@ -29,11 +29,12 @@ train = "--train" in argv or "-t" in argv
 download = "--download" in argv or "-d" in argv
 predict = "--predict" in argv
 test_predict = "--test-predict" in argv # Only WITH the train arg
-chat = "--chat" in argv
-tokenizer_test = "--tokenizer-test" in argv
-embedding_test = "--embedding-test" in argv
-force_cpu = "--cpu" in argv
-force_cuda = "--cuda" in argv
+chat = "--chat" in argv 
+tokenizer_test = "--tokenizer-test" in argv # Good
+embedding_test = "--embedding-test" in argv # Good
+force_cpu = "--cpu" in argv # Good
+force_cuda = "--cuda" in argv # Good
+load_from_file = "--path" in argv or "-p" in argv
 
 if __name__ == "__main__":
     print(f"{tlm()} Start of program.")
