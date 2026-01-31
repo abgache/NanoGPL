@@ -314,11 +314,17 @@ class embedding():
             self.embedding_table += [(token, x.detach().tolist())]
     
     def token_to_vector(self, token_id):
+        if self.embedding_table == [] and self.check_saved_embedding_table():
+            self.load_embedding_table()
+        if isinstance(token_id, list):
+            token_id = token_id[0]
         for token, vector in self.embedding_table:
             if token == token_id:
                 return torch.tensor(vector, dtype=torch.float32).to(self.device)
-        self.logger.log(f"Token ID {token_id} not found in embedding table. Returning zero vector.", v=False, Wh=True, mention=True)
-        return torch.zeros((self.vector_dim,), dtype=torch.float32).to(self.device)
+                break
+        self.logger.log(f"Token ID {token_id} not found in embedding table. Embedding table size : {len(self.embedding_table)}", v=False, Wh=True, mention=True)
+        raise ValueError(f"{tlm()} Token ID {token_id} not found in embedding table. Embedding table size : {len(self.embedding_table)}")
+        #return torch.zeros((self.vector_dim,), dtype=torch.float32).to(self.device) We are NOT returning a zero vector soo we can spot errors more easily
     
     # <!> This is NOT a real function, just added it for --embedding-test, it will NOT be used in real generation. <!>
     def vector_to_token(self, input_vector): # Returns the closest token based on vector distance (Euclidean)

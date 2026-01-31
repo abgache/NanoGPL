@@ -19,7 +19,7 @@ class data():
         
         return self.data
     
-    def ffn_data(self, tokenizer, embed):
+    def ffn_data(self, tokenizer, embed): #error here
         x = [] # List of pytorch tensors
         y = [] # List of token ids
 
