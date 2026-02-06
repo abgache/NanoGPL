@@ -19,6 +19,7 @@ class data():
         
         return self.data
     
+    # Should work but is very unoptimized, will be optimized later, for now I just want to get it working
     def ffn_data(self, tokenizer, embed): #error here, Fckd up function, bad optimization, weird data loading -> Imma use the old unoptimized loading data
         x = [] # List of pytorch tensors
         y = [] # List of token ids
@@ -27,6 +28,18 @@ class data():
             self.load_data()
         
         tokenized_data = tokenizer.tokenize(self.data)
+        tmp = "<UNK>"
+
+        # Main unoptimized data loading loop, will be optimized later
+        for i, token in enumerate(tokenized_data):
+            x.append(embed.get_token_vector(token)) # Get the token vector from the embedding
+            if i == 0:
+                y.append(3)
+            elif i == len(tokenized_data) - 1:
+                y.append(4)
+            else:
+                y.append(tokenizer.get_token_id(tmp)) # Get the token id from the tokenizer
+            tmp = token
 
         #with open(embed.json_table_path, "r", encoding="utf-8") as f:
         #    tmp = json.load(f)
