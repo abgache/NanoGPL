@@ -19,7 +19,7 @@ class tokenizer():
         self.tokens = {} # e.g. {"token": index}
         self.logger.log(f"Tokenizer initialized with vocab size {self.vocab_size}.", v=True, Wh=True, mention=False)
     
-    def tokenize(self, text):
+    def tokenize(self, text: str) -> list[int]:
         # Tokens format: self.tokens = {} # e.g. {"token": index}
         tokens = []
         i = 0
@@ -578,6 +578,7 @@ class FFN():
         self.model.to(self.embedding.device)
         self.logger.log("Feed forward neural network initialized.", v=True, Wh=True, mention=False)
     
+    # <!> *to myself* DO NOT forget to remove 1 (token_id-1) after predicting the token ID because the token IDs in the tokenizer start at 1 and not 0, so the output of the model will be in the range [0, vocab_size-1] but the actual token IDs are in the range [1, vocab_size], so we need to add 1 to the predicted token ID to get the correct token ID. </!>
     def predict(self, input_vector): # Returns the token ID with the highest probability
         if isinstance(input_vector, list):
             input_vector = torch.tensor(input_vector, dtype=torch.float32).to(self.embedding.device)
@@ -588,6 +589,7 @@ class FFN():
         predicted_token_id = torch.argmax(output, dim=1).item()
         return int(predicted_token_id)
 
+    # I'll have to add 1 to every y data
     def train_ffn(self, x, y): # x : python list of input pytorch vectors, y : list of target token IDs NOT one-hot encoded
         if not len(x) == len(y):
             self.logger.log(f"Input and output data lengths do not match. Cannot train FNN. Input size : {len(x)} | Output size : {len(y)}", v=False, Wh=True, mention=True)
@@ -601,7 +603,7 @@ class FFN():
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.model.to(self.embedding.device)
-
+        # print(min(y), max(y))
         for epoch in range(self.num_epochs):
             total_loss = 0.00001 # Test 2 get rid of DivisionByZeroError
             for i in range(0, len(x), self.batch_size):
@@ -627,11 +629,12 @@ class FFN():
                 # self.logger.log(f"min y: {batch_y.min().item()}", v=True, Wh=True, mention=False)
                 # self.logger.log(f"max y: {batch_y.max().item()}", v=True, Wh=True, mention=False)
                 # self.logger.log(f"vocab_size: {self.embedding.tokenizer.vocab_size}", v=True, Wh=True, mention=False)
+                
                 total_loss += int(loss.item()) # probleme avec l'appel de loss.item() -> erreur au bout du 313eme cycle
             avg_loss = total_loss / (len(x) / self.batch_size)
             self.logger.log(f"[train_ffn] Epoch {epoch+1}/{self.num_epochs} - Loss: {avg_loss:.6f}", v=True, Wh=True, mention=False)
         par = str(sum(p.numel() for p in self.model.parameters()))
-        self.logger.log("[train_ffn] Training completed. The model has {par} parameters.", v=True, Wh=True, mention=False)
+        self.logger.log(f"[train_ffn] Training completed. The model has {par} parameters.", v=True, Wh=True, mention=False)
         del par, x, y
 
     def save_model(self):

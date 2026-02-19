@@ -7,7 +7,7 @@ from scripts.time_log import time_log_module as tlm
 from scripts.logger import logger
 from data.data import data
 from model.model import tokenizer, embedding, SPE, attention_head, FFN # import LAM blocks
-#import winsound
+import winsound
 
 # Configuration
 with open("config.json", "r") as f:
@@ -254,5 +254,5 @@ if __name__ == "__main__":
         logger.log(f"Unknown error occurred : {Exception}. Please check the logs for more details.", v=True, Wh=True, mention=True)
         tb = traceback.format_exc()
         logger.log(tb, v=True, Wh=True, mention=True)
-        #winsound.MessageBeep(winsound.MB_ICONASTERISK)
-    logger.log(f"End Of program.", v=True, Wh=True, mention=True)
+        winsound.MessageBeep(winsound.MB_ICONASTERISK)
+    logger.log(f"End of program.", v=True, Wh=True, mention=True)

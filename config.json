@@ -1,6 +1,6 @@
 {
     "webhook_url": "",
-    "model_path": "model/model.pth",
+    "model_path": "model/ffn.pth",
     "data_path": "data/tiny_sheakespeare.txt",
     "json_data_path": "data/dataset.json",
     "dataset_loading_size": 1000000,
@@ -49,5 +49,5 @@
         "batch_size": 32,
         "learning_rate": 0.001
     },
-    "version": "0.2.0"
+    "version": "0.2.1"
 }

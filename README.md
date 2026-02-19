@@ -91,6 +91,43 @@ If you have ``.gpl`` model, please run this command:
 
 ---
 
+## How to get/create a model and share it?
+> **This functionnality hasn't been implemented yet. I will add it soon.**
+
+### Model architecture:
+The model is entirely a ``.gpl`` which in reality is a ``.zip`` that contains all the model's data.
+```
+model.gpl/
+├─ config.json
+├─ tokenizer/
+│  └─ tokenizer.json
+├─ w2v/
+│  ├─ embedding_model.pth
+│  └─ embedding_table.json
+├─ ahs/
+│  └─ matrices/
+│     ├─ wq.json
+│     ├─ wk.json
+│     └─ wv.json
+└─ ffn/
+   └─ ffn.pth 
+```
+### FAQ:
+<details>
+<summary>How to check that my .gpl file is valid?</summary>
+Soon...
+</details>
+<details>
+<summary>How to build a .gpl file from the model I trainned?</summary>
+Soon...
+</details>
+<details>
+<summary>How to run a .gpl file?</summary>
+Soon...
+</details>
+
+---
+
 ### What are all the existing arguments?
 - **--train :** Used to train a new model
 - **--download :** Used to download one of the pretrained models

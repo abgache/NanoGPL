@@ -20,6 +20,7 @@ class data():
         return self.data
     
     # Should work but is very unoptimized, will be optimized later, for now I just want to get it working
+    # I forgot to add the attention heads -_-
     def ffn_data(self, tokenizer, embed): #error here, Fckd up function, bad optimization, weird data loading -> Imma use the old unoptimized loading data
         x = [] # List of pytorch tensors
         y = [] # List of token ids
@@ -32,13 +33,17 @@ class data():
 
         # Main unoptimized data loading loop, will be optimized later
         for i, token in enumerate(tokenized_data):
-            x.append(embed.get_token_vector(token)) # Get the token vector from the embedding
+            x.append(embed.token_to_vector(token)) # Get the token vector from the embedding
             if i == 0:
                 y.append(3)
             elif i == len(tokenized_data) - 1:
                 y.append(4)
             else:
-                y.append(tokenizer.get_token_id(tmp)) # Get the token id from the tokenizer
+                try:
+                    y.append(tmp) # y.append(tokenizer.tokenize(tmp)) # Get the token id from the tokenizer
+                except Exception:
+                    print(tmp) # If it prints an integer i'll have to remove the tokenizer.tokenize, optimization ig ¯\(0_0)/¯ | I am always right hehehe
+                    exit(1)
             tmp = token
 
         #with open(embed.json_table_path, "r", encoding="utf-8") as f:

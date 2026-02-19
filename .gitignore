@@ -3,3 +3,5 @@
 *.pyc
 __pycache__
 model/embedding_table.json
+model/tokenized_data.json
+model/ffn.pth
