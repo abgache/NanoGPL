@@ -38,6 +38,11 @@ class tokenizer():
             else:
                 tokens.append(self.tokens.get("<unk>", 0))
                 i += 1
+        
+        for i in range(len(tokens)):
+            tokens[i] = tokens[i] + 1 
+            
+
         return tokens
     
     def detokenize(self, token_ids):
@@ -349,15 +354,16 @@ class SPE():
     def vector2spe_vector(self, input_vector, position):
         input_vector = input_vector.tolist() if torch.is_tensor(input_vector) else input_vector
         spe_vector = []
+
         for i in range(len(input_vector)):
-            if i % 2 == 0:
-                spe_vector.append(torch.sin(position / (10000 ** ((2 * i) / len(input_vector)))))
-            else:
-                spe_vector.append(torch.cos(position / (10000 ** ((2 * (i + 1)) / len(input_vector)))))
-        spe_vector = torch.tensor(spe_vector, dtype=torch.float32).to(self.device)
+            angle = position / (10000 ** ((2 * i) / len(input_vector))) if i % 2 == 0 else position / (10000 ** ((2 * (i + 1)) / len(input_vector)))
+            angle_tensor = torch.tensor(angle, dtype=torch.float32, device=self.device)
+            spe_vector.append(torch.sin(angle_tensor) if i % 2 == 0 else torch.cos(angle_tensor))
+
+        spe_vector = torch.stack(spe_vector)
         return spe_vector
     
-    def vector_list2spe_vector_list(self, input_vector_list):
+    def vector_list2spe_vector_list(self, input_vector_list: list):
         spe_vector_list = []
         for pos in range(len(input_vector_list)):
             spe_vector = self.vector2spe_vector(input_vector_list[pos], pos)
@@ -587,9 +593,10 @@ class FFN():
         with torch.no_grad():
             output = self.model(input_vector.unsqueeze(0))
         predicted_token_id = torch.argmax(output, dim=1).item()
-        return int(predicted_token_id)
+        predicted_token_id = int(predicted_token_id)
+        return predicted_token_id
 
-    # I'll have to add 1 to every y data
+    # I'll have to add 1 to every y data wait idk; i think the problem from itself comes from the tokenizer.tokenize func
     def train_ffn(self, x, y): # x : python list of input pytorch vectors, y : list of target token IDs NOT one-hot encoded
         if not len(x) == len(y):
             self.logger.log(f"Input and output data lengths do not match. Cannot train FNN. Input size : {len(x)} | Output size : {len(y)}", v=False, Wh=True, mention=True)
@@ -609,6 +616,8 @@ class FFN():
             for i in range(0, len(x), self.batch_size):
                 batch_x = torch.stack([torch.tensor(vec, dtype=torch.float32).to(self.embedding.device) for vec in x[i:i+self.batch_size]])
                 batch_y = torch.tensor(y[i:i+self.batch_size], dtype=torch.long).to(self.embedding.device)
+                #for _ in range(len(batch_y)):
+                #    batch_y[_] = batch_y[_] - 1 # Remove 1 to get the correct token ID for training
 
                 optimizer.zero_grad()
                 outputs = self.model(batch_x)

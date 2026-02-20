@@ -20,8 +20,8 @@ class data():
         return self.data
     
     # Should work but is very unoptimized, will be optimized later, for now I just want to get it working
-    # I forgot to add the attention heads -_-
-    def ffn_data(self, tokenizer, embed): #error here, Fckd up function, bad optimization, weird data loading -> Imma use the old unoptimized loading data
+    # I forgot to add the attention heads and the SPE-_-
+    def ffn_data(self, tokenizer, embed,): #error here, Fckd up function, bad optimization, weird data loading -> Imma use the old unoptimized loading data
         x = [] # List of pytorch tensors
         y = [] # List of token ids
 
@@ -46,26 +46,9 @@ class data():
                     exit(1)
             tmp = token
 
-        #with open(embed.json_table_path, "r", encoding="utf-8") as f:
-        #    tmp = json.load(f)
+        # Apply SPE
+        
+        # Apply AHS
 
-        #input_data = tmp
-
-        ## On récupère les valeurs en retirant juste les doublons consécutifs
-        #tokenized_data = []
-        #prev = None
-        #for v in input_data:
-        #    if v != prev:
-        #        tokenized_data.append(v)
-        #        prev = v
-
-        #for token in tokenized_data:
-        #    x.append(token[1]) # Token[0] = Token ID Token[1] = Token vector 
-        #
-        #for token in tokenized_data[1:]:
-        #    y.append(token[0])
-        #
-        ## Last token need to be <eos>
-        #y.append(4)
 
         return (x, y)

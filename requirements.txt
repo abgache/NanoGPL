@@ -2,3 +2,4 @@ torch
 numpy
 collections
 requests
+winsound

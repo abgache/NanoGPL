@@ -1,28 +1,14 @@
 import torch
 import numpy as np
 import traceback
-from sys import argv
+from sys import argv, platform
 import json
 from scripts.time_log import time_log_module as tlm
 from scripts.logger import logger
 from data.data import data
 from model.model import tokenizer, embedding, SPE, attention_head, FFN # import LAM blocks
-import winsound
-
-# Configuration
-with open("config.json", "r") as f:
-    config = json.load(f)
-webhook_url = config.get("webhook_url", "") # leave empty to disable webhook logging
-model_path = config.get("model_path", "model/model.pth")
-data_path = config.get("data_path", "data/tiny_sheakespeare.txt") # Tiny Shakespeare Dataset by default
-json_data_path = config.get("json_data_path", "data/dataset.json")
-version = config.get("version", "None")
-dataset_loading_size = config.get("dataset_loading_size", 10000)
-tokenizer_config = config.get("tokenizer", {})
-embedding_config = config.get("embedding", {})
-attention_config = config.get("attention", {})
-ffn_config = config.get("ffn", {})
-del config
+if platform.startswith("win"):
+    import winsound
 
 # Args
 train = "--train" in argv or "-t" in argv
@@ -35,6 +21,21 @@ embedding_test = "--embedding-test" in argv # Good
 force_cpu = "--cpu" in argv # Good
 force_cuda = "--cuda" in argv # Good
 load_from_file = "--path" in argv or "-p" in argv
+
+# Configuration
+with open("config.json", "r") as f:
+    config = json.load(f)
+webhook_url = config.get("webhook_url", "") # leave empty to disable webhook logging
+data_path = config.get("data_path", "data/tiny_sheakespeare.txt") # Tiny Shakespeare Dataset by default
+version = config.get("version", "None")
+dataset_loading_size = config.get("dataset_loading_size", 10000)
+json_data_path = config.get("json_data_path", "data/dataset.json")
+tokenizer_config = config.get("tokenizer", {})
+embedding_config = config.get("embedding", {})
+attention_config = config.get("attention", {})
+ffn_config = config.get("ffn", {})
+model_path = config.get("model_path", "model/model.pth")
+del config
 
 if __name__ == "__main__":
     print(f"{tlm()} Start of program.")
@@ -154,13 +155,14 @@ if __name__ == "__main__":
                 del system_prompt, end_prompt
 
                 for _ in range(100): # Generate 100 tokens
-                    token_ids = tk.encode(prompt) # BLOC 1
+                    token_ids = tk.tokenize(prompt) # BLOC 1
                     input_embeddings = embed.token_to_vector(token_ids) # BLOC 2
                     del token_ids
                     spe_embeddings = spe.vector_list2spe_vector_list(input_embeddings) # BLOC 3
                     del input_embeddings
                     # It only outputs the last token's attention output
-                    attention_output = head.forward(spe_embeddings) # BLOC 4
+                    attention_output = head.create_attention_matrix(spe_embeddings, spe_encoded=True) # BLOC 4
+                    attention_output = head.get_new_vector(len(spe_embeddings)-1)
                     del spe_embeddings
                     predicted_token_id = ffn.predict(attention_output) # BLOC 5
                     del attention_output
@@ -254,5 +256,6 @@ if __name__ == "__main__":
         logger.log(f"Unknown error occurred : {Exception}. Please check the logs for more details.", v=True, Wh=True, mention=True)
         tb = traceback.format_exc()
         logger.log(tb, v=True, Wh=True, mention=True)
-        winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        if platform.startswith("win"):
+            winsound.MessageBeep(winsound.MB_ICONASTERISK)
     logger.log(f"End of program.", v=True, Wh=True, mention=True)
