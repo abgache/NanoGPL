@@ -3,6 +3,7 @@
     "model_path": "model/ffn.pth",
     "data_path": "data/tiny_sheakespeare.txt",
     "json_data_path": "data/dataset.json",
+    "icon_url": "https://raw.githubusercontent.com/abgache/NanoGPL/refs/heads/main/ngpl.png",
     "dataset_loading_size": 1000000,
     "tokenizer":{
         "vocab_size": 10000,

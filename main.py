@@ -21,6 +21,7 @@ embedding_test = "--embedding-test" in argv # Good
 force_cpu = "--cpu" in argv # Good
 force_cuda = "--cuda" in argv # Good
 load_from_file = "--path" in argv or "-p" in argv
+arg_list = ["main.py", "--train", "-t", "--download", "-d", "--predict", "--test-predict", "--chat", "--tokenizer-test", "--embedding-test", "--cpu", "--cuda", "--path", "-p"]
 
 # Configuration
 with open("config.json", "r") as f:
@@ -34,25 +35,29 @@ tokenizer_config = config.get("tokenizer", {})
 embedding_config = config.get("embedding", {})
 attention_config = config.get("attention", {})
 ffn_config = config.get("ffn", {})
+icon_path = config.get("icon_url", "https://raw.githubusercontent.com/abgache/NanoGPL/refs/heads/main/ngpl.png")
 model_path = config.get("model_path", "model/model.pth")
 del config
 
 if __name__ == "__main__":
     print(f"{tlm()} Start of program.")
-    logger = logger(discord_webhook=webhook_url) # créer le logger
+    logger = logger(discord_webhook=webhook_url, name="NanoGPL", icon=icon_path) # créer le logger
 
     # Logging system info
-    logger.log(f"Micro Generative Pre-trained Lam test arch - V{version}.", v=True, Wh=True, mention=False)
+    logger.log(f"Nano Generative Pre-trained Lam test arch - V{version}.", v=True, Wh=True, mention=False)
     logger.log(f"To change any setting, go check config.json.", v=True, Wh=True, mention=False)
     logger.log(f"PyTorch version: {torch.__version__}", v=True, Wh=True, mention=False)
     logger.log(f"CUDA status : {str(torch.cuda.is_available())}", v=True, Wh=True, mention=False)
-    logger.log(f"Script args : {argv}", v=False, Wh=True, mention=False)
     if torch.cuda.is_available():
         count = torch.cuda.device_count()
         msg = f"{count} GPU{'s' if count > 1 else ''} detected."
         logger.log(msg, v=True, Wh=True, mention=False)
         for i in range(count):
             logger.log(f" -> Device {i}: {torch.cuda.get_device_name(i)}", v=True, Wh=True, mention=False)
+    logger.log(f"Script args : {argv}", v=False, Wh=True, mention=False)
+    for arg in argv:
+        if arg not in arg_list:
+            logger.log(f"[Warning] Unrecognized argument '{arg}' detected. Please check your command line arguments.", v=True, Wh=True, mention=True)
     
     # Select device
     if force_cuda:
@@ -173,11 +178,6 @@ if __name__ == "__main__":
                 print("Generated Output:")
                 print(output)
 
-        if download:
-            logger.log("Downloading pre-trained model...", v=True, Wh=True, mention=False)
-            auto_choose = input("Do you want to choose the model size or let the program choose the best one for your hardware? (y = choose by yourself / n = let the program choose): ") == "n"
-            print("No model is available for download yet. Please train your own model or wait for the main release.")
-
         if tokenizer_test:
             if tk is None:
                 tk = tokenizer(logger, tokenizer_config)
@@ -246,6 +246,10 @@ if __name__ == "__main__":
                         result_vector = a - b
                         print(f"Resulting vector (first 10 dimensions): {result_vector[:10]} | Length: {len(result_vector)} | New word approximation: {tk.detokenize(embed.vector_to_token(result_vector))}")
 
+        if download:
+            logger.log("Downloading pre-trained model...", v=True, Wh=True, mention=False)
+            auto_choose = input("Do you want to choose the model size or let the program choose the best one for your hardware? (y = choose by yourself / n = let the program choose): ") == "n"
+            print("No model is available for download yet. Please train your own model or wait for the main release.")
 
         if predict:
             pass
