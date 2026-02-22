@@ -7,7 +7,6 @@ from math import ceil, sin, cos, sqrt
 from collections import Counter
 from scripts.time_log import time_log_module as tlm
 from scripts.byte_pair_encoder import data2tokens
-from scripts.graph import plot_attention_matrix
 
 class tokenizer():
     def __init__(self, logger, tokenizer_config):
@@ -535,21 +534,49 @@ class attention_head():
 
     def embed2value(self, input_embedding):
         if isinstance(input_embedding, list):
-            input_embedding = torch.tensor(input_embedding, dtype=torch.float32).to(self.device)
-        return self.wv @ input_embedding
+            try:
+                input_embedding = torch.tensor(input_embedding, dtype=torch.float32).to(self.device)
+            except Exception as e:
+                self.logger.log(f"Error converting input_embedding to tensor: {e}\nInput embedding: {input_embedding}\nType: {type(input_embedding)}", v=True, Wh=True, mention=False)
+                #raise ValueError(f"{tlm()} Error converting input_embedding to tensor: {e}\nInput embedding: {input_embedding}\nType: {type(input_embedding)}")
+                exit(1)
+        return input_embedding @ self.wv
 
-    def create_attention_matrix(self, input_embeddings, spe_encoded=False):
+    def create_attention_matrix(self, input_embeddings, spe_encoded=False, mask=False):
         if not spe_encoded:
             input_embeddings = self.SPE.vector_list2spe_vector_list(input_embeddings)
 
         # Calculate queries & keys
-        queries = torch.tensor([self.embed2query(emb) for emb in input_embeddings], dtype=torch.float32).to(self.device)
-        keys = torch.tensor([self.embed2key(emb) for emb in input_embeddings], dtype=torch.float32).to(self.device)
+        queries = [self.embed2query(emb) for emb in input_embeddings]
+        for i in range(len(queries)):
+            if not torch.is_tensor(queries[i]):
+                queries[i] = torch.tensor(queries[i], dtype=torch.float32).to(self.device)
+        keys = [self.embed2key(emb) for emb in input_embeddings]
+        for i in range(len(keys)):
+            if not torch.is_tensor(keys[i]):
+                keys[i] = torch.tensor(keys[i], dtype=torch.float32).to(self.device)
 
-        scores = (queries @ keys.T) / math.sqrt(queries.size(-1))
-        scores = scores.masked_fill(torch.triu(torch.ones_like(scores), 1).bool(), self.masking_value)
-        self.attention_matrix = scores#torch.softmax(scores, dim=-1)
-        plot_attention_matrix(self.attention_matrix, "data/attention.png")
+        adjust_data = sqrt(len(queries[0]))
+        scores = []
+
+        for i in range(len(queries)):
+            score_row = []
+            for j in range(len(keys)):
+                score = (queries[i] @ keys[j]) / adjust_data
+                score_row.append(score.item())
+            scores.append(score_row)
+
+        self.attention_matrix = torch.tensor(scores, dtype=torch.float32).to(self.device)
+
+        
+
+        #
+        #for i in range(len(queries)):
+        #    scores.append((queries[i] @ keys[i])/adjust_data)
+        ## scores = (queries @ keys) / sqrt(queries.size(-1))
+        #if mask:
+        #    scores = scores.masked_fill(torch.triu(torch.ones_like(scores), 1).bool(), self.masking_value)
+        #self.attention_matrix = scores#torch.softmax(scores, dim=-1)
 
         # Apply softmax to get attention weights
         #self.attention_matrix = torch.nn.functional.softmax(torch.tensor(matrix, dtype=torch.float32).to(self.device), dim=-1)
@@ -559,7 +586,7 @@ class attention_head():
             self.logger.log("Attention matrix not created yet. Cannot get new vector.", v=False, Wh=True, mention=True)
             raise ValueError(f"{tlm()} Attention matrix not created yet. Cannot get new vector.")
         attention_weights = self.attention_matrix[position]
-        value_vectors = torch.tensor([self.embed2value(emb) for emb in self.embedding.embedding_table], dtype=torch.float32).to(self.device)
+        value_vectors = torch.tensor([self.embed2value(emb[1]) for emb in self.embedding.embedding_table], dtype=torch.float32).to(self.device)
         new_vector = attention_weights @ value_vectors
         return new_vector
         
