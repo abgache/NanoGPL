@@ -5,7 +5,7 @@ Small test generative pre-trained LAM (Linear Attention Mechanism).
 To change any setting, please go check ``config.json``.  
 
 ## What is LAM?
-**LAM** stands for Linear Attention Mechanism, it's a [Transformer](https://arxiv.org/pdf/1706.03762)-like neural network architecture made for NGPL, it's way easier to understand, cheaper in resources but less efficient than the real Transformer arch even though they are both really similars.
+**LAM** stands for Linear Attention Mechanism, it's a [Transformer](https://arxiv.org/pdf/1706.03762)-like neural network architecture made for NGPL, it's way easier to understand, cheaper in resources but less efficient than the real Transformer arch even though they are both really similars.  
 ### How does it works?
 ![shema](LAM%20-%20NanoGPL.png)  
 > This shema show how it works from the input word list, to the tokens probabilities. Each bloc is explained down here.
