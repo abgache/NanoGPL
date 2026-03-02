@@ -168,6 +168,8 @@ if __name__ == "__main__":
                     # It only outputs the last token's attention output
                     attention_output = head.create_attention_matrix(spe_embeddings, spe_encoded=True) # BLOC 4
                     attention_output = head.get_new_vector(len(spe_embeddings)-1)
+                    # TODO : Fix error ValueError: only one element tensors can be converted to Python scalars 
+                    #        Add attention in the FFN training data generation
                     del spe_embeddings
                     predicted_token_id = ffn.predict(attention_output) # BLOC 5
                     del attention_output

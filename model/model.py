@@ -586,7 +586,7 @@ class attention_head():
             self.logger.log("Attention matrix not created yet. Cannot get new vector.", v=False, Wh=True, mention=True)
             raise ValueError(f"{tlm()} Attention matrix not created yet. Cannot get new vector.")
         attention_weights = self.attention_matrix[position]
-        value_vectors = torch.tensor([self.embed2value(emb[1]) for emb in self.embedding.embedding_table], dtype=torch.float32).to(self.device)
+        value_vectors = torch.stack([self.embed2value(emb[1]) for emb in self.embedding.embedding_table]).float().to(self.device)
         new_vector = attention_weights @ value_vectors
         return new_vector
         
@@ -619,7 +619,8 @@ class FFN():
         self.model.eval()
         with torch.no_grad():
             output = self.model(input_vector.unsqueeze(0))
-        predicted_token_id = torch.argmax(output, dim=1).item()
+        predicted_token_id = torch.argmax(output[0])#.item()
+        predicted_token_id = predicted_token_id.item() + 1 # Adjusting the token ID to match the tokenizer's token IDs
         predicted_token_id = int(predicted_token_id)
         return predicted_token_id
 
