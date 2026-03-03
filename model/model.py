@@ -617,11 +617,22 @@ class FFN():
             input_vector = torch.tensor(input_vector, dtype=torch.float32).to(self.embedding.device)
         self.model.to(self.embedding.device)
         self.model.eval()
+        #print(f"Input vector shape: {input_vector.shape}")
         with torch.no_grad():
             output = self.model(input_vector.unsqueeze(0))
-        predicted_token_id = torch.argmax(output[0])#.item()
+        # Yes there is a lot of debugging prints, but what r u gonna do abt this anw?
+        #print(f"Input vector shape: {input_vector.unsqueeze(0).shape}")
+        #print(str(torch.all(output == 0)))
+
+        # Softmax
+        probs = torch.softmax(output, dim=-1)
+        print(f"Output probabilities shape: {probs.shape}")
+        predicted_token_id = torch.argmax(probs[0][1])#.item()
+        #print(f"\nPredicted token ID (before adjustment): {predicted_token_id}")
+        #print("Logits stats:", output.min().item(), output.max().item(), output.mean().item())
         predicted_token_id = predicted_token_id.item() + 1 # Adjusting the token ID to match the tokenizer's token IDs
         predicted_token_id = int(predicted_token_id)
+        print(f"Predicted token ID (after adjustment): {predicted_token_id}")
         return predicted_token_id
 
     # I'll have to add 1 to every y data wait idk; i think the problem from itself comes from the tokenizer.tokenize func

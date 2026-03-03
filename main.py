@@ -159,7 +159,9 @@ if __name__ == "__main__":
                 output = ""
                 del system_prompt, end_prompt
 
-                for _ in range(25): # Generate 100 tokens
+                print(f"Prompt: {prompt}\nGenerating output...")
+
+                for _ in range(25): # Generate 25 tokens
                     token_ids = tk.tokenize(prompt) # BLOC 1
                     input_embeddings = embed.token_to_vector(token_ids) # BLOC 2
                     del token_ids
@@ -172,15 +174,15 @@ if __name__ == "__main__":
                     #        Add attention in the FFN training data generation
                     del spe_embeddings
                     predicted_token_id = ffn.predict(attention_output) # BLOC 5
-                    print(attention_output, end="", flush=True)
+                    #print(predicted_token_id, end="", flush=True)
                     del attention_output
                     token = tk.detokenize([predicted_token_id])
                     output += token
                     prompt += token
                     print(token, end="", flush=True)
 
-                print("Generated Output:")
-                print(output)
+                #print("Generated Output:")
+                #print(output)
 
         if tokenizer_test:
             if tk is None:
