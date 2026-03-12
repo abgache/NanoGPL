@@ -1,13 +1,11 @@
 name: Discord Logger
-
-# Écoute tous les événements
+# Do not forget to set the DISCORD_WEBHOOK secret in your repository settings
 on:
   push:
   release:
   issues:
   pull_request:
-  workflow_dispatch: # permet de tester manuellement
-
+  workflow_dispatch:
 jobs:
   notify:
     runs-on: ubuntu-latest
